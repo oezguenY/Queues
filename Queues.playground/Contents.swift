@@ -50,46 +50,38 @@ class Node<T> {
 
 // MARK: - PUSH
 
-struct Stack<T> {
+struct Queue<T> {
 
     var head: Node<T>?
     var tail: Node<T>?
-    var size = 0
     
     var isEmpty: Bool { head == nil }
     
-    mutating func push(_ value: T) {
-        head = Node(value: value, next: head)
+    mutating func enqueue(_ value: T) {
+        let node = Node(value: value)
+        // creating new node at the end
+        tail?.next = node
+        // assigning new node to the tail
+        // This time, we are only changing the tail since we are appending at the end of the list
+        tail = node
         
-        if tail == nil {
-            tail = head
+        if isEmpty {
+            head = node
         }
     }
     
     mutating func dequeue() -> Node<T>? {
-        // return if the list is empty (because there isnt anything to remove)
-        guard let head = head else { return nil }
-        // if there is just one node, that would mean head.next == nil, so we could use pop
-        guard head.next != nil else {
-            self.head = nil
-            self.tail = nil
-            return nil
+        //... then, after the function has returned, defer is called. If the List is empty now, nil is assigned to head. And because head is nil, isEmpty is true and the tail will also be set to nil
+        defer {
+            // we are assigning the next node to be the head
+            head = head?.next
+            // if there is no head, set the tail to nil
+            if isEmpty {
+                tail = nil
+            }
         }
-        
-        var newTail = head
-        var currentNode = head
-        
-        while let next = currentNode.next {
-            // newTail is being set to the currentNode, thus newTail lags behind
-            newTail = currentNode
-            // currentNode gets set to the next node
-            currentNode = next
-        }
-        
-        newTail.next = nil
-        tail = newTail
-        return currentNode
+        // First, this line is called...
+        return head
     }
 }
-
 
